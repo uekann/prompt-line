@@ -6,17 +6,22 @@ export class DomManager {
   public headerShortcutsEl: HTMLElement | null = null;
   public historyShortcutsEl: HTMLElement | null = null;
   public searchInput: HTMLInputElement | null = null;
+  public vimIndicator: HTMLElement | null = null;
+  public vimModeText: HTMLElement | null = null;
 
   public initializeElements(): void {
     this.textarea = document.getElementById('textInput') as HTMLTextAreaElement;
     this.appNameEl = document.getElementById('appName');
+    // Optional since footer hints/char count may be removed
     this.charCountEl = document.getElementById('charCount');
     this.historyList = document.getElementById('historyList');
     this.headerShortcutsEl = document.getElementById('headerShortcuts');
     this.historyShortcutsEl = document.getElementById('historyShortcuts');
     this.searchInput = document.getElementById('searchInput') as HTMLInputElement;
+    this.vimIndicator = document.getElementById('vimIndicator');
+    this.vimModeText = document.getElementById('vimMode');
 
-    if (!this.textarea || !this.appNameEl || !this.charCountEl || !this.historyList) {
+    if (!this.textarea || !this.appNameEl || !this.historyList) {
       throw new Error('Required DOM elements not found');
     }
   }

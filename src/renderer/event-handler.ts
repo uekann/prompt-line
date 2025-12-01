@@ -152,15 +152,23 @@ export class EventHandler {
         return;
       }
 
-      // Handle Escape for hide window
+      // Handle Escape for hide window (respect Vim mode)
       if (e.key === 'Escape') {
-        e.preventDefault();
-        // Check if search mode is active
+        // If search is active, Esc exits search
         if (this.searchManager && this.searchManager.isInSearchMode()) {
-          // Exit search mode instead of hiding window
+          e.preventDefault();
           this.searchManager.exitSearchMode();
           return;
         }
+
+        // When Vim mode is enabled, let Vim manager handle Esc
+        if (this.userSettings?.vim?.enabled) {
+          // Do not prevent default or hide window; allow downstream handlers
+          return;
+        }
+
+        // Default behavior: hide window
+        e.preventDefault();
         await this.onWindowHide();
         return;
       }

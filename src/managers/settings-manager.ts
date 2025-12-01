@@ -27,6 +27,9 @@ class SettingsManager {
         position: 'active-text-field',
         width: 600,
         height: 300
+      },
+      vim: {
+        enabled: false
       }
     };
 
@@ -84,6 +87,10 @@ class SettingsManager {
       window: {
         ...this.defaultSettings.window,
         ...userSettings.window
+      },
+      vim: {
+        ...(this.defaultSettings.vim || { enabled: false }),
+        ...(userSettings.vim || {})
       }
     };
   }
@@ -148,6 +155,13 @@ window:
   # Window height in pixels
   # Recommended range: 200-400 pixels
   height: ${settings.window.height}
+
+# Vim mode configuration
+vim:
+  # Enable or disable vim-like key bindings
+  # When enabled, the text input uses modal editing (Normal, Insert, Visual modes)
+  # Set to true to enable vim mode, false to use normal text input
+  enabled: ${settings.vim?.enabled ?? false}
 `;
   }
 

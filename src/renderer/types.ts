@@ -35,6 +35,18 @@ export interface UserSettings {
     width: number;
     height: number;
   };
+  vim?: {
+    enabled: boolean;
+  };
+}
+
+// Vim mode types
+export type VimMode = 'normal' | 'insert' | 'visual' | 'visual-line';
+
+export interface VimState {
+  mode: VimMode;
+  yankBuffer: string;
+  visualStart: number | null;
 }
 
 export interface WindowData {

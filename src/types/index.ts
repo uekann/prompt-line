@@ -185,5 +185,8 @@ export interface UserSettings {
     width: number;
     height: number;
   };
+  vim?: {
+    enabled: boolean;
+  };
 }
 
