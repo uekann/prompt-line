@@ -114,7 +114,7 @@ window:
 
     it('should return default settings', () => {
       const settings = settingsManager.getSettings();
-      
+
       expect(settings).toEqual({
         shortcuts: {
           main: 'Cmd+Shift+Space',
@@ -128,6 +128,9 @@ window:
           position: 'active-text-field',
           width: 600,
           height: 300
+        },
+        vim: {
+          enabled: false
         }
       });
     });
