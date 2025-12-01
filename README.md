@@ -142,7 +142,14 @@ If you already have an older version installed and want to update to the latest 
 
 ## ⚙️ Settings
 
-You can customize Prompt Line's behavior by creating a settings file at `~/.prompt-line/settings.yml`:
+You can customize Prompt Line's behavior through a settings file. The application follows the XDG Base Directory Specification:
+
+**Settings file location** (checked in this order):
+1. `$XDG_CONFIG_HOME/prompt-line/settings.yml` (if `XDG_CONFIG_HOME` is set)
+2. `~/.config/prompt-line/settings.yml` (if `~/.config` exists)
+3. `~/.prompt-line/settings.yml` (legacy fallback)
+
+The settings file is automatically created with default values on first run. You can edit it manually:
 
 ```yaml
 # Prompt Line Settings Configuration
@@ -200,7 +207,9 @@ window:
 
 - All data stored locally on your Mac
 - No internet connection required
-- Prompt history saved in `~/.prompt-line/history.jsonl`
+- Follows XDG Base Directory Specification:
+  - History: `$XDG_DATA_HOME/prompt-line/` or `~/.local/share/prompt-line/` (or `~/.prompt-line/` fallback)
+  - Logs: `$XDG_STATE_HOME/prompt-line/` or `~/.local/state/prompt-line/` (or `~/.prompt-line/` fallback)
 - Saved in JSON Lines format, so you can analyze it using [DuckDB](https://duckdb.org/)
 
 ![doc8.png](assets/doc8.png)
