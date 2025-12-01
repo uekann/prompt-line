@@ -1,4 +1,9 @@
-import { describe, test, expect, beforeEach, afterEach } from '@jest/globals';
+import { describe, test, expect, beforeEach, afterEach, jest } from '@jest/globals';
+
+// Unmock fs for integration tests
+jest.unmock('fs');
+jest.unmock('fs/promises');
+
 import { promises as fs } from 'fs';
 import path from 'path';
 import os from 'os';

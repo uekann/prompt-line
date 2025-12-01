@@ -184,10 +184,27 @@ The app uses compiled Swift native tools to simulate Cmd+V in the previously act
 - **Security**: Compiled binaries eliminate script injection vulnerabilities
 
 ### Data Storage
-All data is stored in `~/.prompt-line/`:
+The application follows the XDG Base Directory Specification for storing user data:
+
+**Configuration Files** (`settings.yml`):
+- `$XDG_CONFIG_HOME/prompt-line/` if `XDG_CONFIG_HOME` is set
+- `~/.config/prompt-line/` if `~/.config` exists
+- `~/.prompt-line/` otherwise (legacy fallback)
+
+**Data Files** (`history.jsonl`, `draft.json`, `images/`):
+- `$XDG_DATA_HOME/prompt-line/` if `XDG_DATA_HOME` is set
+- `~/.local/share/prompt-line/` if `~/.local/share` exists
+- `~/.prompt-line/` otherwise (legacy fallback)
+
+**Log Files** (`app.log`):
+- `$XDG_STATE_HOME/prompt-line/` if `XDG_STATE_HOME` is set
+- `~/.local/state/prompt-line/` if `~/.local/state` exists
+- `~/.prompt-line/` otherwise (legacy fallback)
+
+**File Types:**
+- `settings.yml`: User preferences including window positioning mode (YAML format)
 - `history.jsonl`: Paste history (JSONL format for efficient append operations)
 - `draft.json`: Auto-saved drafts (created on-demand when drafts are saved)
-- `settings.yml`: User preferences including window positioning mode
 - `app.log`: Application logs with debug information
 - `images/`: Directory for image storage
 

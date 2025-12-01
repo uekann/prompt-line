@@ -1,8 +1,8 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import os from 'os';
 import * as yaml from 'js-yaml';
 import { logger } from '../utils/utils';
+import config from '../config/app-config';
 import type { UserSettings } from '../types';
 
 class SettingsManager {
@@ -11,7 +11,8 @@ class SettingsManager {
   private defaultSettings: UserSettings;
 
   constructor() {
-    this.settingsFile = path.join(os.homedir(), '.prompt-line', 'settings.yml');
+    // Use XDG-compliant settings file path from app-config
+    this.settingsFile = config.paths.settingsFile;
     
     this.defaultSettings = {
       shortcuts: {

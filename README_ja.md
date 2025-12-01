@@ -140,7 +140,14 @@ npm run reset-accessibility
 
 ## ⚙️ 設定
 
-`~/.prompt-line/settings.yml`に設定ファイルを作成してPrompt Lineの動作をカスタマイズできます：
+設定ファイルを通じてPrompt Lineの動作をカスタマイズできます。アプリケーションはXDG Base Directory仕様に準拠しています：
+
+**設定ファイルの場所**（以下の順序で確認されます）：
+1. `$XDG_CONFIG_HOME/prompt-line/settings.yml` （`XDG_CONFIG_HOME`が設定されている場合）
+2. `~/.config/prompt-line/settings.yml` （`~/.config`が存在する場合）
+3. `~/.prompt-line/settings.yml` （レガシーフォールバック）
+
+設定ファイルは初回起動時にデフォルト値で自動作成されます。手動で編集することもできます：
 
 ```yaml
 # Prompt Line Settings Configuration
@@ -197,7 +204,9 @@ window:
 
 - すべてのデータはMac内にローカル保存
 - インターネット接続不要
-- プロンプト履歴は `~/.prompt-line/history.jsonl` に保存
+- XDG Base Directory仕様に準拠：
+  - 履歴: `$XDG_DATA_HOME/prompt-line/` または `~/.local/share/prompt-line/` （または `~/.prompt-line/` フォールバック）
+  - ログ: `$XDG_STATE_HOME/prompt-line/` または `~/.local/state/prompt-line/` （または `~/.prompt-line/` フォールバック）
 - JSON Lines形式で保存されているので[DuckDB](https://duckdb.org/)を使って分析することもできます。
 
 ![doc8.png](assets/doc8.png)

@@ -8,6 +8,7 @@ jest.mock('child_process', () => ({
 
 // Mock fs before importing utils
 jest.mock('fs', () => ({
+    existsSync: jest.fn(() => true),  // Mock for XDG directory detection
     promises: {
         access: jest.fn(),
         mkdir: jest.fn(),
