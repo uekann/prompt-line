@@ -89,11 +89,20 @@ export interface ShortcutsConfig {
 }
 
 export interface PathsConfig {
+  // XDG Base Directory paths
+  configDir: string;      // XDG_CONFIG_HOME or fallback
+  dataDir: string;        // XDG_DATA_HOME or fallback
+  stateDir: string;       // XDG_STATE_HOME or fallback
+
+  // Legacy path for backward compatibility (same as dataDir)
   userDataDir: string;
-  historyFile: string;
-  draftFile: string;
-  logFile: string;
-  imagesDir: string;
+
+  // File paths
+  settingsFile: string;   // Configuration file (in configDir)
+  historyFile: string;    // History file (in dataDir)
+  draftFile: string;      // Draft file (in dataDir)
+  logFile: string;        // Log file (in stateDir)
+  imagesDir: string;      // Images directory (in dataDir)
 }
 
 export interface HistoryConfig {

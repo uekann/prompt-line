@@ -113,9 +113,10 @@ class Logger {
   private logFile: string;
 
   constructor() {
-    // Initialize with defaults to avoid circular dependency
-    this.logFile = path.join(os.homedir(), '.prompt-line', 'app.log');
-    
+    // Initialize with default to avoid circular dependency
+    // This will be updated to XDG-compliant path in initializeConfig()
+    this.logFile = '';
+
     // Set actual config values after initialization if available
     this.initializeConfig();
   }
@@ -127,10 +128,13 @@ class Logger {
         this.enableFileLogging = config.logging.enableFileLogging !== false;
       }
       if (config && config.paths && config.paths.logFile) {
+        // Use XDG-compliant log file path from config
         this.logFile = config.paths.logFile;
       }
     } catch {
-      // Config not available yet, use defaults
+      // Config not available yet, use fallback
+      // Fall back to legacy path only if config is completely unavailable
+      this.logFile = path.join(os.homedir(), '.prompt-line', 'app.log');
     }
   }
 

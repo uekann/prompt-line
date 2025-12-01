@@ -1,5 +1,6 @@
 import path from 'path';
 import os from 'os';
+import { existsSync, mkdirSync } from 'fs';
 import type {
   WindowConfig,
   ShortcutsConfig,
@@ -15,6 +16,93 @@ import type {
 
 // Import package.json to get the version dynamically
 import packageJson from '../../package.json';
+
+/**
+ * Resolves XDG config directory path according to XDG Base Directory specification
+ * Priority: $XDG_CONFIG_HOME → ~/.config (if exists) → ~/.prompt-line
+ */
+function getXdgConfigDir(): string {
+  const xdgConfigHome = process.env.XDG_CONFIG_HOME;
+  if (xdgConfigHome) {
+    return path.join(xdgConfigHome, 'prompt-line');
+  }
+
+  const configDir = path.join(os.homedir(), '.config');
+  if (existsSync(configDir)) {
+    return path.join(configDir, 'prompt-line');
+  }
+
+  return path.join(os.homedir(), '.prompt-line');
+}
+
+/**
+ * Resolves XDG data directory path according to XDG Base Directory specification
+ * Priority: $XDG_DATA_HOME → ~/.local/share (if exists) → ~/.prompt-line
+ */
+function getXdgDataDir(): string {
+  const xdgDataHome = process.env.XDG_DATA_HOME;
+  if (xdgDataHome) {
+    return path.join(xdgDataHome, 'prompt-line');
+  }
+
+  const dataDir = path.join(os.homedir(), '.local', 'share');
+  if (existsSync(dataDir)) {
+    return path.join(dataDir, 'prompt-line');
+  }
+
+  return path.join(os.homedir(), '.prompt-line');
+}
+
+/**
+ * Resolves XDG state directory path according to XDG Base Directory specification
+ * Priority: $XDG_STATE_HOME → ~/.local/state (if exists) → ~/.prompt-line
+ */
+function getXdgStateDir(): string {
+  const xdgStateHome = process.env.XDG_STATE_HOME;
+  if (xdgStateHome) {
+    return path.join(xdgStateHome, 'prompt-line');
+  }
+
+  const stateDir = path.join(os.homedir(), '.local', 'state');
+  if (existsSync(stateDir)) {
+    return path.join(stateDir, 'prompt-line');
+  }
+
+  return path.join(os.homedir(), '.prompt-line');
+}
+
+/**
+ * Ensures XDG directories exist by creating them if necessary
+ * This is called synchronously during app initialization
+ */
+function ensureXdgDirectories(configDir: string, dataDir: string, stateDir: string): void {
+  try {
+    // Create config directory
+    if (!existsSync(configDir)) {
+      mkdirSync(configDir, { recursive: true });
+    }
+
+    // Create data directory
+    if (!existsSync(dataDir)) {
+      mkdirSync(dataDir, { recursive: true });
+    }
+
+    // Create state directory
+    if (!existsSync(stateDir)) {
+      mkdirSync(stateDir, { recursive: true });
+    }
+
+    // Create images subdirectory in data directory
+    const imagesDir = path.join(dataDir, 'images');
+    if (!existsSync(imagesDir)) {
+      mkdirSync(imagesDir, { recursive: true });
+    }
+  } catch (error) {
+    // Log error but don't fail app initialization
+    // Directories will be created later by individual managers if needed
+    console.error('Failed to create XDG directories during initialization:', error);
+  }
+}
 
 class AppConfigClass {
   public window!: WindowConfig;
@@ -73,20 +161,35 @@ class AppConfigClass {
       search: 'Cmd+f'
     };
 
-    const userDataDir = path.join(os.homedir(), '.prompt-line');
+    // Resolve XDG Base Directory paths
+    const configDir = getXdgConfigDir();
+    const dataDir = getXdgDataDir();
+    const stateDir = getXdgStateDir();
+
     this.paths = {
-      userDataDir,
+      // XDG Base Directory paths
+      configDir,
+      dataDir,
+      stateDir,
+
+      // Legacy path for backward compatibility
+      userDataDir: dataDir,
+
+      // File paths using XDG directories
+      get settingsFile() {
+        return path.join(configDir, 'settings.yml');
+      },
       get historyFile() {
-        return path.join(userDataDir, 'history.jsonl');
+        return path.join(dataDir, 'history.jsonl');
       },
       get draftFile() {
-        return path.join(userDataDir, 'draft.json');
+        return path.join(dataDir, 'draft.json');
       },
       get logFile() {
-        return path.join(userDataDir, 'app.log');
+        return path.join(stateDir, 'app.log');
       },
       get imagesDir() {
-        return path.join(userDataDir, 'images');
+        return path.join(dataDir, 'images');
       }
     };
 
@@ -127,6 +230,11 @@ class AppConfigClass {
       maxLogFileSize: 5 * 1024 * 1024,
       maxLogFiles: 3
     };
+
+    // Ensure XDG directories exist (skip in test environment)
+    if (process.env.NODE_ENV !== 'test') {
+      ensureXdgDirectories(configDir, dataDir, stateDir);
+    }
   }
 
   get<K extends keyof this>(section: K): this[K] {
