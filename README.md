@@ -200,7 +200,65 @@ window:
   # Recommended range: 200-400 pixels
   height: 300
 
+# Vim mode configuration
+vim:
+  # Enable or disable vim-like key bindings
+  # When enabled, the text input uses modal editing (Normal, Insert, Visual modes)
+  # Set to true to enable vim mode, false to use normal text input
+  enabled: false
+
 ```
+
+### Vim Mode
+
+Prompt Line supports vim-like modal editing for users familiar with Vim keybindings. When enabled, a mode indicator appears in the top-right corner of the window.
+
+**Enable Vim Mode:**
+1. Edit your settings file (see location above)
+2. Set `vim.enabled: true`
+3. Restart Prompt Line
+
+**Supported Modes:**
+- **Normal Mode** (default): Navigate and manipulate text
+- **Insert Mode**: Type text normally
+- **Visual Mode**: Select and manipulate text regions
+- **Visual-Line Mode**: Select and manipulate entire lines
+
+**Key Bindings:**
+
+*Normal Mode:*
+- `h/j/k/l`: Move cursor left/down/up/right
+- `i`: Enter Insert mode at cursor
+- `I`: Enter Insert mode at line start
+- `a`: Enter Insert mode after cursor
+- `A`: Enter Insert mode at line end
+- `v`: Enter Visual mode
+- `V`: Enter Visual-Line mode
+- `x`: Delete character at cursor
+- `dd`: Delete (cut) current line
+- `yy`: Yank (copy) current line
+- `p`: Paste after cursor
+- `P`: Paste before cursor
+- `u`: Undo last change
+- `U`: Redo last undone change
+- `gg`: Go to file start
+- `G`: Go to file end
+
+*Insert Mode:*
+- `Esc` or `Ctrl+[`: Return to Normal mode
+- All other keys work as normal text input
+
+*Visual/Visual-Line Mode:*
+- `h/j/k/l`: Extend selection
+- `y`: Yank (copy) selection and return to Normal mode
+- `d`: Delete (cut) selection and return to Normal mode
+- `p`: Replace selection with yanked text
+- `Esc` or `Ctrl+[`: Cancel selection and return to Normal mode
+
+**Mode Indicator Colors:**
+- 🔵 **Blue**: Normal mode
+- 🟢 **Green**: Insert mode
+- 🟣 **Purple**: Visual/Visual-Line mode
 
 
 ## Prompt History
