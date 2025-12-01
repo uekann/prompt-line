@@ -4,8 +4,9 @@ import os from 'os';
 import SettingsManager from '../../src/managers/settings-manager';
 import type { UserSettings } from '../../src/types';
 
-// Mock fs module
+// Mock fs module (including sync methods for app-config)
 jest.mock('fs', () => ({
+  existsSync: jest.fn(() => true),  // Mock for XDG directory detection
   promises: {
     mkdir: jest.fn(),
     readFile: jest.fn(),
@@ -51,7 +52,8 @@ const mockedFs = fs as jest.Mocked<typeof fs>;
 
 describe('SettingsManager', () => {
   let settingsManager: SettingsManager;
-  const settingsPath = path.join(os.homedir(), '.prompt-line', 'settings.yml');
+  // XDG-compliant settings path (with mocked existsSync returning true, ~/.config is used)
+  const settingsPath = path.join(os.homedir(), '.config', 'prompt-line', 'settings.yml');
 
   beforeEach(() => {
     jest.clearAllMocks();

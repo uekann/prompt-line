@@ -90,6 +90,13 @@ jest.mock('child_process', () => ({
     })
 }));
 
+// Mock fs module for sync operations
+jest.mock('fs', () => ({
+    existsSync: jest.fn(() => true),  // Default: directories exist
+    readFileSync: jest.fn(() => ''),
+    writeFileSync: jest.fn()
+}));
+
 // Mock fs/promises for file operations
 jest.mock('fs/promises', () => ({
     readFile: jest.fn(),
@@ -97,6 +104,7 @@ jest.mock('fs/promises', () => ({
     unlink: jest.fn(),
     access: jest.fn(),
     mkdir: jest.fn(),
+    mkdtemp: jest.fn(() => Promise.resolve('/tmp/test-dir')),
     readdir: jest.fn(() => []),
     stat: jest.fn(() => ({ mtime: new Date() }))
 }));
