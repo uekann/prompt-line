@@ -33,9 +33,11 @@
                 <div class="input-wrapper">
                     <div class="header">
                         <div class="app-name" id="appName">Prompt Line</div>
-                        <div class="shortcuts" id="headerShortcuts">
-                            <kbd>⌘</kbd>+<kbd>↵</kbd> Paste
-                            <kbd>Esc</kbd> Close
+                        <div class="header-right">
+                            <div class="vim-indicator" id="vimIndicator" style="display: none;">
+                                <span class="vim-mode" id="vimMode">NORMAL</span>
+                            </div>
+                            <div class="shortcuts" id="headerShortcuts"></div>
                         </div>
                     </div>
                     
@@ -51,10 +53,7 @@
                         aria-autocomplete="none"
                     ></textarea>
                     
-                    <div class="footer">
-                        <div class="hint">Multi-line text and Image supported</div>
-                        <div class="char-count" id="charCount">0 chars</div>
-                    </div>
+                    <!-- Footer hints removed per latest spec -->
                 </div>
             </div>
             

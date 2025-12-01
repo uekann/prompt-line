@@ -5,7 +5,8 @@ import type {
   Config,
   PasteResult,
   ImageResult,
-  UserSettings
+  UserSettings,
+  VimMode
 } from './types';
 import { EventHandler } from './event-handler';
 import { SearchManager } from './search-manager';
@@ -14,6 +15,7 @@ import { DraftManager } from './draft-manager';
 import { HistoryUIManager } from './history-ui-manager';
 import { LifecycleManager } from './lifecycle-manager';
 import { SimpleSnapshotManager } from './snapshot-manager';
+import { VimModeManager } from './managers/vim-mode-manager';
 
 // Secure electronAPI access via preload script
 const electronAPI = (window as any).electronAPI;
@@ -35,11 +37,18 @@ export class PromptLineRenderer {
   private historyUIManager: HistoryUIManager;
   private lifecycleManager: LifecycleManager;
   private snapshotManager: SimpleSnapshotManager;
+  private vimModeManager: VimModeManager;
 
   constructor() {
     this.domManager = new DomManager();
     this.draftManager = new DraftManager(electronAPI, () => this.domManager.getCurrentText());
     this.snapshotManager = new SimpleSnapshotManager();
+    this.vimModeManager = new VimModeManager(
+      this.domManager,
+      (mode: VimMode) => this.updateVimModeIndicator(mode),
+      () => this.handleWindowHideCallback(),
+      (text: string) => this.copyToClipboard(text)
+    );
     this.historyUIManager = new HistoryUIManager(
       () => this.domManager.historyList,
       (text: string) => this.domManager.setText(text),
@@ -176,6 +185,15 @@ export class PromptLineRenderer {
     try {
       if (!this.domManager.textarea) return;
 
+      // Handle vim mode keys first
+      if (this.vimModeManager.isEnabled()) {
+        const handled = this.vimModeManager.handleKeyDown(e);
+        if (handled) {
+          e.preventDefault();
+          return;
+        }
+      }
+
       if (e.key === 'v' && (e.metaKey || e.ctrlKey)) {
         // Store current text content before paste operation
         const textBeforePaste = this.domManager.getCurrentText();
@@ -299,7 +317,7 @@ export class PromptLineRenderer {
     this.historyData = data.history || [];
     this.filteredHistoryData = [...this.historyData];
     this.searchManager?.updateHistoryData(this.historyData);
-    
+
     // Update user settings if provided
     if (data.settings) {
       this.userSettings = data.settings;
@@ -307,8 +325,10 @@ export class PromptLineRenderer {
       if (this.eventHandler) {
         this.eventHandler.setUserSettings(data.settings);
       }
+      // Initialize vim mode based on settings
+      this.initializeVimMode(data.settings);
     }
-    
+
     this.renderHistory();
   }
 
@@ -376,10 +396,61 @@ export class PromptLineRenderer {
     }
   }
 
+  /**
+   * Update vim mode indicator in UI
+   */
+  private updateVimModeIndicator(mode: VimMode): void {
+    const indicator = this.domManager.vimIndicator;
+    const modeText = this.domManager.vimModeText;
+
+    if (!indicator || !modeText) return;
+
+    // Update mode text
+    const modeNames: Record<VimMode, string> = {
+      'normal': 'NORMAL',
+      'insert': 'INSERT',
+      'visual': 'VISUAL',
+      'visual-line': 'V-LINE'
+    };
+
+    modeText.textContent = modeNames[mode];
+
+    // Update data attribute for styling
+    indicator.setAttribute('data-mode', mode);
+  }
+
+  /**
+   * Initialize vim mode from settings
+   */
+  private initializeVimMode(settings: UserSettings | null): void {
+    const vimEnabled = settings?.vim?.enabled ?? false;
+
+    this.vimModeManager.setEnabled(vimEnabled);
+
+    // Show/hide vim indicator
+    if (this.domManager.vimIndicator) {
+      this.domManager.vimIndicator.style.display = vimEnabled ? 'flex' : 'none';
+    }
+  }
+
+  /**
+   * Copy text to system clipboard
+   */
+  private copyToClipboard(text: string): void {
+    try {
+      navigator.clipboard.writeText(text).catch((error) => {
+        console.error('Failed to copy to clipboard:', error);
+      });
+    } catch (error) {
+      console.error('Clipboard API not available:', error);
+    }
+  }
+
   // Cleanup method
   public cleanup(): void {
     this.draftManager.cleanup();
     this.historyUIManager.cleanup();
+    this.vimModeManager.cleanup();
   }
 }
 

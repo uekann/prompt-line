@@ -30,6 +30,48 @@
     font-weight: 500;
 }
 
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+/* Vim Mode Indicator */
+.vim-indicator {
+    display: flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.vim-indicator .vim-mode {
+    display: inline-block;
+}
+
+/* Mode-specific colors */
+.vim-indicator[data-mode="normal"] {
+    background: rgba(59, 130, 246, 0.2);
+    color: rgb(147, 197, 253);
+    border: 1px solid rgba(59, 130, 246, 0.4);
+}
+
+.vim-indicator[data-mode="insert"] {
+    background: rgba(34, 197, 94, 0.2);
+    color: rgb(134, 239, 172);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.vim-indicator[data-mode="visual"],
+.vim-indicator[data-mode="visual-line"] {
+    background: rgba(168, 85, 247, 0.2);
+    color: rgb(216, 180, 254);
+    border: 1px solid rgba(168, 85, 247, 0.4);
+}
+
 .shortcuts {
     font-size: var(--font-size-base);
     color: var(--text-tertiary);
@@ -54,6 +96,22 @@
     white-space: break-spaces;        /* Preserve line breaks, collapse whitespace, wrap as needed */
     overflow-wrap: break-word;    /* Break long words to prevent overflow */
     word-break: normal;           /* Break at word boundaries when possible */
+}
+
+/* Vim mode cursor styling */
+#textInput[data-vim-mode="normal"]::selection {
+    background: rgba(255, 255, 255, 0.3);
+    color: var(--text-primary);
+}
+
+#textInput[data-vim-mode="normal"]::-moz-selection {
+    background: rgba(255, 255, 255, 0.3);
+    color: var(--text-primary);
+}
+
+/* Hide blinking cursor in normal mode */
+#textInput[data-vim-mode="normal"] {
+    caret-color: transparent;
 }
 
 #textInput:focus {

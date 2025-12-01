@@ -86,10 +86,16 @@ export class LifecycleManager {
   private updateShortcutsDisplay(): void {
     if (!this.userSettings) return;
 
+    // If Vim mode is enabled, show 'q' as the close key in header
+    const effectiveShortcuts = {
+      ...this.userSettings.shortcuts,
+      close: this.userSettings.vim?.enabled ? 'q' : this.userSettings.shortcuts.close,
+    };
+
     updateShortcutsDisplay(
       this.getHeaderShortcutsEl(),
       this.getHistoryShortcutsEl(),
-      this.userSettings.shortcuts
+      effectiveShortcuts
     );
   }
 
